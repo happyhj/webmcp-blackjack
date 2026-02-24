@@ -486,21 +486,25 @@ WebMCP Blackjack
 
       {/* Footer */}
       <footer className="footer">
-        <a href="https://github.com/happyhj/webmcp-blackjack" target="_blank" rel="noopener noreferrer">
-          GitHub
-        </a>
-        <span> · MIT · </span>
-        <a href="https://happyhj.github.io" target="_blank" rel="noopener noreferrer">
-          Heejae Kim
-        </a>
-        <span> · </span>
-        <a href="https://www.linkedin.com/in/heejaekm/" target="_blank" rel="noopener noreferrer">
-          LinkedIn
-        </a>
-        <span> · Powered by </span>
-        <a href="https://ai.google.dev/gemma" target="_blank" rel="noopener noreferrer">
-          Gemma 3
-        </a>
+        <div>
+          <a href="https://github.com/happyhj/webmcp-blackjack" target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+          <span> · MIT · </span>
+          <a href="https://happyhj.github.io" target="_blank" rel="noopener noreferrer">
+            Heejae Kim
+          </a>
+          <span> · </span>
+          <a href="https://www.linkedin.com/in/heejaekm/" target="_blank" rel="noopener noreferrer">
+            LinkedIn
+          </a>
+        </div>
+        <div className="footer-powered">
+          Powered by{' '}
+          <a href="https://ai.google.dev/gemma" target="_blank" rel="noopener noreferrer">
+            Gemma 3
+          </a>
+        </div>
       </footer>
     </div>
   );

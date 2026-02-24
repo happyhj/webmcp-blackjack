@@ -17,6 +17,30 @@
   box-sizing: border-box;
 }
 
+/* Thin translucent scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -473,6 +497,10 @@ body {
   font-size: 12px;
 }
 
+.help-close:hover {
+  color: var(--green);
+}
+
 .help-btn {
   cursor: pointer;
   color: var(--dim);
@@ -691,6 +719,10 @@ body {
 
 .footer a:hover {
   color: var(--green);
+}
+
+.footer-powered {
+  margin-top: 4px;
 }
 
 /* Mobile */

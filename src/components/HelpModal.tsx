@@ -58,7 +58,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
           ))}
         </div>
 
-        <div className="help-close">{t.help_close}</div>
+        <div className="help-close" onClick={onClose} style={{ cursor: 'pointer' }}>{t.help_close}</div>
       </div>
     </div>
   );
