@@ -30,7 +30,10 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
   return (
     <div className="help-overlay" onClick={onClose}>
       <div className="help-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="help-title">DEALER says...</div>
+        <div className="help-header">
+          <div className="help-title">DEALER says...</div>
+          <button className="help-close-btn" onClick={onClose}>X</button>
+        </div>
 
         <div className="help-tabs">
           <button

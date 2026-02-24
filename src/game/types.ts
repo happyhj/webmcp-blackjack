@@ -1,4 +1,4 @@
-// ─── 카드 ───
+// ─── Card ───
 
 export type Suit = 'spades' | 'hearts' | 'diamonds' | 'clubs';
 export type Rank = 'A' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K';
@@ -10,7 +10,7 @@ export interface Card {
 
 export type Deck = Card[];
 
-// ─── 핸드 ───
+// ─── Hand ───
 
 export interface HandValue {
   hard: number;
@@ -26,7 +26,7 @@ export interface Hand {
   value: HandValue;
 }
 
-// ─── 게임 페이즈 ───
+// ─── Game Phase ───
 
 export type GamePhase =
   | 'idle'
@@ -39,7 +39,7 @@ export type GamePhase =
   | 'settling'
   | 'round_end';
 
-// ─── 참가자 ───
+// ─── Participant ───
 
 export type Role = 'player' | 'ai_player' | 'dealer';
 
@@ -69,19 +69,19 @@ export interface ThinkingEntry {
   langFlag?: string;
 }
 
-// 역할별 사용 가능 tool 목록
+// Available tools per role
 export const ROLE_AVAILABLE_TOOLS: Record<'ai_player' | 'dealer', string[]> = {
   ai_player: ['get_my_hand', 'get_dealer_upcard', 'hit', 'stand'],
   dealer: ['get_my_hand', 'reveal_hidden', 'hit', 'stand'],
 };
 
-// ─── 에이전트 액션 ───
+// ─── Agent Action ───
 
 export type AgentAction =
   | { type: 'hit' }
   | { type: 'stand' };
 
-// ─── 게임 상태 ───
+// ─── Game State ───
 
 export interface GameState {
   phase: GamePhase;
@@ -107,7 +107,7 @@ export interface LogEntry {
   type: 'info' | 'action' | 'result' | 'error' | 'fallback';
 }
 
-// ─── 리듀서 액션 ───
+// ─── Reducer Actions ───
 
 export type GameAction =
   | { type: 'RESET' }
@@ -124,14 +124,14 @@ export type GameAction =
   | { type: 'SET_CURRENT_THINKING'; entry: ThinkingEntry | null }
   | { type: 'ADD_LOG'; entry: Omit<LogEntry, 'timestamp'> };
 
-// ─── LLM 응답 ───
+// ─── LLM Response ───
 
 export interface LLMResponse {
   thinking: string;
   action: 'hit' | 'stand';
 }
 
-// ─── 에이전트 뷰 ───
+// ─── Agent View ───
 
 export interface AIPlayerView {
   myHand: { cards: Card[]; value: number; soft: boolean };
@@ -148,6 +148,6 @@ export interface DealerView {
   roundNumber: number;
 }
 
-// ─── 결과 ───
+// ─── Result ───
 
 export type RoundResult = 'win' | 'lose' | 'push' | 'blackjack_win' | 'blackjack_push';

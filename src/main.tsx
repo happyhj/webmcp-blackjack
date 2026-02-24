@@ -5,10 +5,10 @@ import { isGeminiAvailable } from './agents/gemini-flash'
 import { initGA } from './analytics'
 import App from './App'
 
-// 앱 시작 시 Gemini API health check — 결과가 콘솔에 출력됨
+// Gemini API health check on startup — result logged to console
 isGeminiAvailable();
 
-// GA4 초기화 (VITE_GA_ID 없으면 no-op)
+// GA4 init (no-op if VITE_GA_ID is not set)
 initGA();
 
 createRoot(document.getElementById('root')!).render(

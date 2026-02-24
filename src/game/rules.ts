@@ -1,11 +1,11 @@
 import type { Hand, RoundResult } from './types';
 
-// 딜러는 16 이하면 반드시 hit, 17 이상이면 stand (soft 17도 stand)
+// Dealer must hit on 16 or below, stand on 17+ (soft 17 also stands)
 export function mustDealerHit(hand: Hand): boolean {
   return hand.value.best < 17;
 }
 
-// 결과 판정
+// Determine round result
 export function determineResult(playerHand: Hand, dealerHand: Hand): RoundResult {
   const pv = playerHand.value;
   const dv = dealerHand.value;
@@ -31,13 +31,13 @@ export function determineResult(playerHand: Hand, dealerHand: Hand): RoundResult
   return 'push';
 }
 
-// 배당 계산
+// Calculate payout
 export function calculatePayout(bet: number, result: RoundResult): number {
   switch (result) {
     case 'blackjack_win': return Math.floor(bet * 2.5); // 3:2
     case 'win': return bet * 2;
     case 'push':
-    case 'blackjack_push': return bet; // 반환
+    case 'blackjack_push': return bet; // refund
     case 'lose': return 0;
   }
 }

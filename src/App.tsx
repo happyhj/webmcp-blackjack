@@ -11,6 +11,7 @@ import { HelpModal } from './components/HelpModal';
 import { GameLog } from './components/GameLog';
 import { ResultScreen } from './components/ResultScreen';
 import { THINKING_LANG_OPTIONS } from './i18n/types';
+import { LangSelect } from './components/LangSelect';
 import { trackGameStart, trackRoundComplete, trackLangChange, trackHelpOpen } from './analytics';
 import './styles/terminal.css';
 
@@ -265,7 +266,8 @@ export default function App() {
       <div className="header-bar">
         <span className="title clickable" onClick={() => dispatch({ type: 'RESET' })}>♠ WebMCP Blackjack</span>
         <div className="controls">
-          <span className="agent-lang-group">
+          {/* Desktop: inline flag buttons */}
+          <span className="agent-lang-group desktop-only">
             <span className="agent-lang-label">Alex</span>
             {THINKING_LANG_OPTIONS.map((opt) => (
               <button
@@ -278,7 +280,7 @@ export default function App() {
               </button>
             ))}
           </span>
-          <span className="agent-lang-group">
+          <span className="agent-lang-group desktop-only">
             <span className="agent-lang-label">Dealer</span>
             {THINKING_LANG_OPTIONS.map((opt) => (
               <button
@@ -291,6 +293,17 @@ export default function App() {
               </button>
             ))}
           </span>
+          {/* Mobile: dropdown selects */}
+          <LangSelect
+            agent="Alex"
+            value={alexLang}
+            onChange={(lang) => { setAlexLang(lang); trackLangChange('alex', lang); }}
+          />
+          <LangSelect
+            agent="Dealer"
+            value={dealerLang}
+            onChange={(lang) => { setDealerLang(lang); trackLangChange('dealer', lang); }}
+          />
           <button className="help-btn" onClick={() => { setHelpOpen(true); trackHelpOpen(); }}>
             {t.help_button}
           </button>

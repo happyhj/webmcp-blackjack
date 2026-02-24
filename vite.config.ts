@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
 
-// .env.local에서 GEMINI_API_KEY를 직접 파싱
+// Parse GEMINI_API_KEY directly from .env.local
 function loadApiKey(): string {
   const envPath = resolve(process.cwd(), '.env.local');
   if (existsSync(envPath)) {
