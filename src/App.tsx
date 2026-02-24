@@ -350,10 +350,9 @@ export default function App() {
       {/* Idle — welcome */}
       {state.phase === 'idle' && (
         <div className="welcome-screen">
-          <pre className="welcome-art">{`
-  ♠ ♥ ♦ ♣
-  WebMCP Blackjack
-  ♣ ♦ ♥ ♠`}</pre>
+          <pre className="welcome-art">{`♠ ♥ ♦ ♣
+WebMCP Blackjack
+♣ ♦ ♥ ♠`}</pre>
           <p className="welcome-desc">
             Two AI agents and you play blackjack on the W3C
             WebMCP standard API. Each role gets different tools
@@ -497,6 +496,10 @@ export default function App() {
         <span> · </span>
         <a href="https://www.linkedin.com/in/heejaekm/" target="_blank" rel="noopener noreferrer">
           LinkedIn
+        </a>
+        <span> · Powered by </span>
+        <a href="https://ai.google.dev/gemma" target="_blank" rel="noopener noreferrer">
+          Gemma 3
         </a>
       </footer>
     </div>

@@ -98,6 +98,8 @@ On Chrome 146+ with the WebMCP flag, registered tools also appear in the WebMCP 
 - [WebMCP GitHub](https://github.com/webmachinelearning/webmcp) - Spec repo and discussions
 - [Chrome WebMCP Early Preview](https://developer.chrome.com/blog/webmcp-epp) - Chrome 146 Canary implementation
 - [`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill) - Polyfill for `navigator.modelContext`
+- [WebMCP Inspector](https://github.com/mr-shitij/webmcp_inspector) - Chrome extension for inspecting and calling registered tools
+- [Gemma 3](https://ai.google.dev/gemma) - Open model used for agent reasoning (free tier via Gemini API)
 
 ## License
 
