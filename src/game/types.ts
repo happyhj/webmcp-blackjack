@@ -110,6 +110,7 @@ export interface LogEntry {
 // ─── 리듀서 액션 ───
 
 export type GameAction =
+  | { type: 'RESET' }
   | { type: 'START_ROUND' }
   | { type: 'PLACE_BET'; role: Role; amount: number }
   | { type: 'DEAL_INITIAL' }
