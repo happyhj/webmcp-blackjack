@@ -2,7 +2,7 @@
 
 Three players, one table, different tools - a blackjack game built entirely on the W3C WebMCP standard API (`navigator.modelContext`).
 
-**[Live Demo → webmcp-blackjack.pages.dev](https://webmcp-blackjack.pages.dev)**
+**[Live Demo → webmcp-blackjack.heejae.dev](https://webmcp-blackjack.heejae.dev)**
 
 ![WebMCP Blackjack](./docs/landing.png)
 
