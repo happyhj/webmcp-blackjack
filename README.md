@@ -4,7 +4,7 @@ Three players, one table, different tools - a blackjack game built entirely on t
 
 **[Live Demo → webmcp-blackjack.pages.dev](https://webmcp-blackjack.pages.dev)**
 
-![WebMCP Blackjack Screenshot](./docs/screenshot.png)
+![WebMCP Blackjack](./docs/landing.png)
 
 ## Motivation
 
@@ -24,6 +24,24 @@ No spec extension needed. Just `registerTool()`, `clearContext()`, and applicati
 | **Information asymmetry** | Each agent's tool trace shows raw JSON. Same game state, different views per role. |
 | **Inspector compatible** | On Chrome 146+ with the WebMCP flag, registered tools show in the WebMCP Inspector and can be called from there. |
 | **Multilingual reasoning** | Flag buttons switch each agent's thinking language live (EN/KR/JA/ES). |
+
+### Alex's Turn - Tool Calls and Reasoning
+
+![Alex thinking](./docs/Alex_thinking.gif)
+
+Alex calls `get_my_hand` and `get_dealer_upcard` via the standard API, then reasons about the hand and decides to hit or stand.
+
+### Dealer's Turn - Different Tools, Full Information
+
+![Dealer's turn](./docs/Dealers_turn.gif)
+
+The dealer gets `reveal_hidden` instead of `get_dealer_upcard` - same game state, different tool set and data.
+
+### Multilingual Reasoning
+
+![Multilingual reasoning](./docs/Multilngual_reasoning.gif)
+
+Switch each agent's thinking language live with the flag buttons. The reasoning content changes but the tool interface stays the same.
 
 ### Tool Sets Per Phase
 
@@ -65,6 +83,14 @@ The game works without an API key - agents fall back to basic strategy with a `(
 3. Relaunch - `navigator.modelContext` will be native and tools will appear in DevTools
 
 Without the flag, the polyfill handles everything. The code detects native support automatically.
+
+#### WebMCP Inspector
+
+With the [WebMCP Inspector](https://github.com/mr-shitij/webmcp_inspector) extension installed, registered tools show up in a side panel. You can inspect tool schemas and call them directly - including playing the game from the Inspector on your turn.
+
+![WebMCP Inspector](./docs/webmcp_inspector_showing_skills.png)
+
+![Playing via Inspector](./docs/webmcp_inspector.gif)
 
 ## Deployment (Cloudflare Pages)
 
