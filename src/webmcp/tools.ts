@@ -9,8 +9,8 @@
  * always reflects who can do what right now.
  */
 
-import type { GameState } from '../game/types';
-import { cardValue } from '../game/hand';
+import type { GameState, Card } from '../game/types';
+import { cardValue, calculateHandValue } from '../game/hand';
 
 // ─── Callback-based action tools ───
 
@@ -27,15 +27,47 @@ export interface BetCallbacks {
   onBet: (amount: number) => void;
 }
 
-function makeHitTool(cb?: () => void) {
+/**
+ * Create a hit tool that returns the drawn card + updated hand.
+ *
+ * By including the new hand in the result, external agents don't need
+ * to call get_my_hand again after each hit — avoiding Inspector loop
+ * guard issues and reducing round-trips.
+ */
+function makeHitTool(
+  getCurrentCards: () => Card[],
+  getDeck: () => Card[],
+  cb?: () => void,
+) {
   return {
     name: 'hit',
-    description: 'Draw one more card in this blackjack game. Increases hand value but risks busting over 21. You MUST call this tool to actually hit — just saying "hit" does nothing.',
+    description: 'Draw one more card in this blackjack game. Returns the drawn card and your updated hand. If not bust, decide to hit again or stand. You MUST call this tool to actually hit — just saying "hit" does nothing.',
     inputSchema: { type: 'object', properties: {} } as const,
     execute: async () => {
+      // Peek at the card that will be drawn (deck[0]) before dispatch
+      const deck = getDeck();
+      const drawnCard = deck.length > 0 ? deck[0] : null;
+      const currentCards = getCurrentCards();
+      const newCards = drawnCard ? [...currentCards, drawnCard] : currentCards;
+      const hv = calculateHandValue(newCards);
+
       cb?.();
+
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify({ action: 'hit', accepted: true }) }],
+        content: [{
+          type: 'text' as const,
+          text: JSON.stringify({
+            action: 'hit',
+            accepted: true,
+            drawn_card: drawnCard,
+            new_hand: {
+              cards: newCards,
+              value: hv.best,
+              soft: hv.isSoft,
+              bust: hv.isBust,
+            },
+          }),
+        }],
       };
     },
   };
@@ -55,7 +87,7 @@ function makeStandTool(cb?: () => void) {
   };
 }
 
-// ─── Player tools (human) ───
+// ─── Player tools (human / external agent) ───
 
 /**
  * Register tools for the betting phase.
@@ -143,7 +175,11 @@ export function registerPlayerTurnTools(
     },
   });
 
-  mc.registerTool(makeHitTool(callbacks.onHit));
+  mc.registerTool(makeHitTool(
+    () => state.player.hand.cards,
+    () => state.deck,
+    callbacks.onHit,
+  ));
   mc.registerTool(makeStandTool(callbacks.onStand));
 }
 
@@ -191,7 +227,10 @@ export function registerAIPlayerTools(state: GameState): void {
     },
   });
 
-  mc.registerTool(makeHitTool());
+  mc.registerTool(makeHitTool(
+    () => state.aiPlayer.hand.cards,
+    () => state.deck,
+  ));
   mc.registerTool(makeStandTool());
 }
 
@@ -235,7 +274,10 @@ export function registerDealerTools(state: GameState): void {
     }),
   });
 
-  mc.registerTool(makeHitTool());
+  mc.registerTool(makeHitTool(
+    () => state.dealer.hand.cards,
+    () => state.deck,
+  ));
   mc.registerTool(makeStandTool());
 }
 
