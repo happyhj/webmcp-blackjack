@@ -30,7 +30,7 @@ export interface BetCallbacks {
 function makeHitTool(cb?: () => void) {
   return {
     name: 'hit',
-    description: 'Request another card. Increases hand value but risks busting over 21.',
+    description: 'Draw one more card in this blackjack game. Increases hand value but risks busting over 21. You MUST call this tool to actually hit — just saying "hit" does nothing.',
     inputSchema: { type: 'object', properties: {} } as const,
     execute: async () => {
       cb?.();
@@ -44,7 +44,7 @@ function makeHitTool(cb?: () => void) {
 function makeStandTool(cb?: () => void) {
   return {
     name: 'stand',
-    description: 'Keep current hand and end turn. No more cards will be dealt.',
+    description: 'End your turn and keep your current hand. You MUST call this tool to actually stand — just saying "stand" does nothing.',
     inputSchema: { type: 'object', properties: {} } as const,
     execute: async () => {
       cb?.();
@@ -69,7 +69,7 @@ export function registerPlayerBettingTools(
 
   mc.registerTool({
     name: 'place_bet',
-    description: 'Place a bet to start the round. Valid amounts: 25, 50, 100, 200.',
+    description: 'Place a bet to start the blackjack round. Call this tool with an amount to begin. Valid amounts: 25, 50, 100, 200.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -111,7 +111,7 @@ export function registerPlayerTurnTools(
 
   mc.registerTool({
     name: 'get_my_hand',
-    description: 'Returns your current hand, value, and whether it is soft.',
+    description: 'Returns your current blackjack hand with cards, total value, and soft/hard status. Call this to see what you have before deciding to hit or stand.',
     inputSchema: { type: 'object', properties: {} },
     execute: async () => ({
       content: [{
@@ -127,7 +127,7 @@ export function registerPlayerTurnTools(
 
   mc.registerTool({
     name: 'get_dealer_upcard',
-    description: 'Returns the dealer\'s visible (face-up) card and its value.',
+    description: 'Returns the dealer\'s visible face-up card and its value. The dealer\'s other card is hidden. Use this with your hand to decide whether to hit or stand.',
     inputSchema: { type: 'object', properties: {} },
     execute: async () => {
       const upcard = state.dealer.hand.cards[1];
@@ -159,7 +159,7 @@ export function registerAIPlayerTools(state: GameState): void {
 
   mc.registerTool({
     name: 'get_my_hand',
-    description: 'Returns the AI player\'s current hand, value, and whether it is soft.',
+    description: 'Returns your current blackjack hand with cards, total value, and soft/hard status. Call this to see what you have before deciding to hit or stand.',
     inputSchema: { type: 'object', properties: {} },
     execute: async () => ({
       content: [{
@@ -175,7 +175,7 @@ export function registerAIPlayerTools(state: GameState): void {
 
   mc.registerTool({
     name: 'get_dealer_upcard',
-    description: 'Returns the dealer\'s visible (face-up) card and its value.',
+    description: 'Returns the dealer\'s visible face-up card and its value. The dealer\'s other card is hidden. Use this with your hand to decide whether to hit or stand.',
     inputSchema: { type: 'object', properties: {} },
     execute: async () => {
       const upcard = state.dealer.hand.cards[1];
@@ -207,7 +207,7 @@ export function registerDealerTools(state: GameState): void {
 
   mc.registerTool({
     name: 'get_my_hand',
-    description: 'Returns the dealer\'s full hand including the hidden card.',
+    description: 'Returns your full blackjack hand including the hidden card, with total value. Check this before deciding to hit or stand per house rules.',
     inputSchema: { type: 'object', properties: {} },
     execute: async () => ({
       content: [{
@@ -222,7 +222,7 @@ export function registerDealerTools(state: GameState): void {
 
   mc.registerTool({
     name: 'reveal_hidden',
-    description: 'Reveals the dealer\'s face-down card to all players.',
+    description: 'Reveals your face-down card to all players at the table.',
     inputSchema: { type: 'object', properties: {} },
     execute: async () => ({
       content: [{
