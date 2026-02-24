@@ -94,7 +94,7 @@ export function ThinkingPanel({
             key={i}
             trace={trace}
             turnNumber={i + 1}
-            t={t}
+            agentCallsLabel={t.agent_calls}
           />
         ) : null
       )}
@@ -136,11 +136,11 @@ export function ThinkingPanel({
 function AgentToolCall({
   trace,
   turnNumber,
-  t,
+  agentCallsLabel,
 }: {
   trace: ToolTrace;
   turnNumber: number;
-  t: Record<string, unknown>;
+  agentCallsLabel: string;
 }) {
   const compactResult = formatToolResult(trace.toolName, trace.result);
 
@@ -148,7 +148,7 @@ function AgentToolCall({
     <div className="tool-trace slide-in">
       <span className="agent-turn-num">#{turnNumber}</span>
       {' '}
-      <span className="agent-arrow">{(t as Record<string, string>).agent_calls ?? 'Agent →'}</span>
+      <span className="agent-arrow">{agentCallsLabel}</span>
       {' '}
       <span className="agent-tool-name">{trace.toolName}()</span>
       <div className="agent-tool-result">
