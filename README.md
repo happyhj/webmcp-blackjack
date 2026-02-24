@@ -2,7 +2,9 @@
 
 Same tools, different permissions — watch two AI agents play blackjack under WebMCP's role-based tool access.
 
-**[Live Demo →](#)** *(coming soon)*
+**[Live Demo → webmcp-blackjack.pages.dev](https://webmcp-blackjack.pages.dev)**
+
+![WebMCP Blackjack Screenshot](./docs/screenshot.png)
 
 ## What This Demonstrates
 
@@ -58,6 +60,13 @@ See `wrangler.toml` for configuration. The `functions/api/gemini.ts` proxy keeps
 | `S` | Stand (instant) |
 | `Space` | Advance thinking steps |
 | `?` | Help |
+
+## References
+
+- [WebMCP Specification](https://webmachinelearning.github.io/webmcp/) — W3C Community Group draft
+- [WebMCP Proposal](https://github.com/webmachinelearning/webmcp/blob/main/docs/proposal.md) — Design rationale and API overview
+- [WebMCP GitHub](https://github.com/webmachinelearning/webmcp) — Spec repo and discussions
+- [Chrome WebMCP Early Preview](https://developer.chrome.com/blog/webmcp-epp) — Chrome 146 Canary implementation
 
 ## License
 
