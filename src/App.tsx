@@ -441,8 +441,12 @@ export default function App() {
           GitHub
         </a>
         <span> · MIT · </span>
-        <a href="https://www.linkedin.com/in/heejaekm/" target="_blank" rel="noopener noreferrer">
+        <a href="https://happyhj.github.io" target="_blank" rel="noopener noreferrer">
           Heejae Kim
+        </a>
+        <span> · </span>
+        <a href="https://www.linkedin.com/in/heejaekm/" target="_blank" rel="noopener noreferrer">
+          LinkedIn
         </a>
       </footer>
     </div>

@@ -50,7 +50,7 @@ export const en: Strings = {
 
   help_button: '[?]',
   help_tab_rules: 'Game Rules',
-  help_tab_demo: 'What to Watch',
+  help_tab_demo: 'Behind the Table',
   help_rules: [
     'Welcome to my table. Let me explain how this works.',
     'Goal: Get closer to 21 than me without going over.',
