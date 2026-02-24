@@ -1,10 +1,41 @@
 import { z } from 'zod';
-import type { LLMResponse, AIPlayerView, DealerView } from '../game/types';
 
-const LLMResponseSchema = z.object({
+/**
+ * Multi-turn Gemma API wrapper for the agentic tool-calling loop.
+ *
+ * Supports accumulating conversation history so the model can:
+ *   1. Call a tool  → receive the result  → call another tool  → ...
+ *   2. Finally return a {thinking, action} decision.
+ *
+ * This mirrors how external browser agents converse with an LLM
+ * while using WebMCP tools.
+ */
+
+// ─── Response schemas ───
+
+const ToolCallSchema = z.object({
+  tool_call: z.string(),
+});
+
+const ActionSchema = z.object({
   thinking: z.string(),
   action: z.enum(['hit', 'stand']),
 });
+
+export type AgentResponse =
+  | { type: 'tool_call'; toolName: string }
+  | { type: 'action'; thinking: string; action: 'hit' | 'stand' };
+
+// ─── Message types for multi-turn ───
+
+interface GeminiPart {
+  text: string;
+}
+
+interface GeminiContent {
+  role: 'user' | 'model';
+  parts: GeminiPart[];
+}
 
 // Fetch with timeout
 function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 12000): Promise<Response> {
@@ -13,34 +44,20 @@ function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 12000):
   return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
 }
 
-export async function callGeminiFlash(
-  systemPrompt: string,
-  agentView: AIPlayerView | DealerView,
-): Promise<LLMResponse> {
-  console.log('[Gemma] Calling API...');
-
-  // Gemma 3 27B needs a very explicit JSON-only instruction
-  const userMessage = [
-    systemPrompt,
-    '',
-    'Current game state:',
-    JSON.stringify(agentView, null, 2),
-    '',
-    'IMPORTANT: You MUST respond with ONLY a valid JSON object, nothing else.',
-    'No markdown, no explanation, no code blocks. Just raw JSON.',
-    'Format: {"thinking": "<your 1-2 sentence reasoning>", "action": "<hit or stand>"}',
-    'Example: {"thinking": "Dealer shows 6, my hand is 13. Dealer likely busts.", "action": "stand"}',
-  ].join('\n');
+/**
+ * Send a multi-turn conversation to Gemma and parse the response
+ * as either a tool_call or a final action.
+ */
+export async function callGeminiMultiTurn(
+  messages: GeminiContent[],
+): Promise<AgentResponse> {
+  console.log('[Gemma] Calling API (multi-turn, %d messages)...', messages.length);
 
   const response = await fetchWithTimeout('/api/gemini', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      contents: [
-        {
-          parts: [{ text: userMessage }],
-        },
-      ],
+      contents: messages,
       generationConfig: {
         temperature: 0.7,
         maxOutputTokens: 256,
@@ -66,7 +83,14 @@ export async function callGeminiFlash(
     throw new Error('Empty response from Gemma');
   }
 
-  // Extract JSON — Gemma may wrap in markdown backticks or add extra text
+  return parseAgentResponse(text);
+}
+
+/**
+ * Parse Gemma's text output into either a tool_call or a final action.
+ */
+function parseAgentResponse(text: string): AgentResponse {
+  // Extract JSON — Gemma may wrap in markdown backticks
   const jsonMatch = text.match(/\{[\s\S]*?\}/);
   if (!jsonMatch) {
     throw new Error('No JSON found in Gemma response');
@@ -75,28 +99,54 @@ export async function callGeminiFlash(
   try {
     const parsed = JSON.parse(jsonMatch[0]);
 
-    // Gemma might use different casing or synonyms — normalize
+    // Check if it's a tool_call
+    if (parsed.tool_call) {
+      const validated = ToolCallSchema.parse(parsed);
+      return { type: 'tool_call', toolName: validated.tool_call };
+    }
+
+    // Otherwise it should be a final action
     const action = String(parsed.action || '').toLowerCase().trim();
     const normalizedAction = action.startsWith('hit') ? 'hit' : 'stand';
-    const thinking = String(parsed.thinking || parsed.reason || parsed.reasoning || 'No reasoning provided');
+    const thinking = String(
+      parsed.thinking || parsed.reason || parsed.reasoning || 'No reasoning provided',
+    );
 
-    return LLMResponseSchema.parse({
-      thinking,
-      action: normalizedAction,
-    });
+    ActionSchema.parse({ thinking, action: normalizedAction });
+    return { type: 'action', thinking, action: normalizedAction };
   } catch (parseErr) {
     console.warn('[Gemma] JSON parse failed, trying fallback extraction:', parseErr);
 
-    // Last resort: look for hit/stand keywords in the raw text
-    const lowerText = text.toLowerCase();
-    const hasHit = lowerText.includes('"hit"') || lowerText.includes("'hit'");
-    const action = hasHit ? 'hit' : 'stand';
+    // Last resort: look for tool_call or hit/stand keywords
+    const lower = text.toLowerCase();
+
+    // Check for tool call keywords
+    const toolMatch = text.match(/tool_call['":\s]+['"]([\w]+)['"]/i);
+    if (toolMatch) {
+      return { type: 'tool_call', toolName: toolMatch[1] };
+    }
+
+    // Fall back to action detection
+    const hasHit = lower.includes('"hit"') || lower.includes("'hit'");
+    const actionType = hasHit ? 'hit' as const : 'stand' as const;
     const thinkingMatch = text.match(/thinking['":\s]+([^"]+)/i);
     const thinking = thinkingMatch?.[1]?.trim() || 'Gemma response parsed via fallback';
 
-    return { thinking, action };
+    return { type: 'action', thinking, action: actionType };
   }
 }
+
+// ─── Helper to build conversation messages ───
+
+export function makeUserMessage(text: string): GeminiContent {
+  return { role: 'user', parts: [{ text }] };
+}
+
+export function makeModelMessage(text: string): GeminiContent {
+  return { role: 'model', parts: [{ text }] };
+}
+
+// ─── Availability check (unchanged) ───
 
 let _geminiAvailable: boolean | null = null;
 

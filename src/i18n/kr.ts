@@ -20,6 +20,9 @@ export const kr: Strings = {
   decision: '결정: {action}',
   fallback_tag: '(기본 전략)',
   step_prompt: '[ SPACE 계속 ]',
+  agent_calls: 'Agent →',
+  agent_tools_available: '사용 가능 도구 {n}개',
+  agent_no_tools: '(도구 호출 없이 직접 결정)',
 
   log_deal: '{role}에게 {card} 배분',
   log_hit: '{role} 히트 → {card}',

@@ -20,6 +20,9 @@ export const en: Strings = {
   decision: 'Decision: {action}',
   fallback_tag: '(basic strategy)',
   step_prompt: '[ SPACE to continue ]',
+  agent_calls: 'Agent →',
+  agent_tools_available: '{n} tools available',
+  agent_no_tools: '(direct decision — no tools called)',
 
   log_deal: '{role} receives {card}',
   log_hit: '{role} hits → {card}',

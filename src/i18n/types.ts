@@ -46,6 +46,9 @@ export interface Strings {
   decision: string;
   fallback_tag: string;
   step_prompt: string;
+  agent_calls: string;
+  agent_tools_available: string;
+  agent_no_tools: string;
 
   // Game log
   log_deal: string;

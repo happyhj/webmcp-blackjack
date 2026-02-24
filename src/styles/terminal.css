@@ -169,14 +169,66 @@ body {
   padding-bottom: 4px;
 }
 
+/* Agent loop badge in header */
+.thinking-panel .agent-loop-badge {
+  display: inline-block;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 9px;
+  padding: 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.thinking-panel .agent-loop-meta {
+  color: var(--dim);
+  font-size: 10px;
+}
+
 /* Tool trace — slide in from left */
 .thinking-panel .tool-trace {
   color: var(--dim);
   font-size: 12px;
-  padding: 2px 0;
+  padding: 3px 0 1px;
 }
 
 .thinking-panel .tool-trace.slide-in {
+  animation: slideIn 0.4s ease-out both;
+}
+
+.thinking-panel .agent-turn-num {
+  color: var(--accent);
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.thinking-panel .agent-arrow {
+  color: var(--green);
+  font-size: 11px;
+}
+
+.thinking-panel .agent-tool-name {
+  color: var(--text);
+}
+
+.thinking-panel .agent-tool-result {
+  color: var(--dim);
+  font-size: 11px;
+  padding-left: 20px;
+  opacity: 0.6;
+}
+
+/* Skip notice when model makes direct decision */
+.thinking-panel .tool-trace-skip {
+  color: var(--dim);
+  font-size: 11px;
+  font-style: italic;
+  padding: 2px 0;
+}
+
+.thinking-panel .tool-trace-skip.slide-in {
   animation: slideIn 0.4s ease-out both;
 }
 
