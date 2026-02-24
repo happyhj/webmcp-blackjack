@@ -13,6 +13,11 @@ import { ResultScreen } from './components/ResultScreen';
 import { THINKING_LANG_OPTIONS } from './i18n/types';
 import { LangSelect } from './components/LangSelect';
 import { trackGameStart, trackRoundComplete, trackLangChange, trackHelpOpen } from './analytics';
+import {
+  clearAllTools,
+  registerPlayerBettingTools,
+  registerPlayerTurnTools,
+} from './webmcp/tools';
 import './styles/terminal.css';
 
 const BET_OPTIONS = [25, 50, 100, 200];
@@ -81,6 +86,38 @@ export default function App() {
   const playerStand = useCallback(() => {
     dispatch({ type: 'STAND', role: 'player' });
   }, []);
+
+  // ── WebMCP: register player tools at phase transitions ──
+  // Ref-based callbacks so tool handlers always call the latest version
+  const playerHitRef = useRef(playerHit);
+  const playerStandRef = useRef(playerStand);
+  playerHitRef.current = playerHit;
+  playerStandRef.current = playerStand;
+
+  const placeBetAndDealWithAmount = useCallback((amount: number) => {
+    setSelectedBet(amount);
+    dispatch({ type: 'PLACE_BET', role: 'player', amount });
+    dispatch({ type: 'PLACE_BET', role: 'ai_player', amount });
+    dispatch({ type: 'DEAL_INITIAL' });
+    dispatch({ type: 'SET_PHASE', phase: 'player_turn' });
+    dispatch({ type: 'SET_TURN', role: 'player' });
+  }, []);
+
+  useEffect(() => {
+    if (state.phase === 'betting') {
+      clearAllTools();
+      registerPlayerBettingTools(state, {
+        onBet: (amount) => placeBetAndDealWithAmount(amount),
+      });
+    } else if (state.phase === 'player_turn' && state.player.status === 'active') {
+      clearAllTools();
+      registerPlayerTurnTools(state, {
+        onHit: () => playerHitRef.current(),
+        onStand: () => playerStandRef.current(),
+      });
+    }
+    // AI and dealer phases are handled by agent-runner
+  }, [state.phase, state.player.status, state.player.hand.cards.length]);
 
   // After player busts, stands, or hits blackjack → move to AI turn
   // Reset action focus when player turn starts
@@ -264,7 +301,7 @@ export default function App() {
     <div>
       {/* Header */}
       <div className="header-bar">
-        <span className="title clickable" onClick={() => dispatch({ type: 'RESET' })}>♠ WebMCP Blackjack</span>
+        <span className="title clickable" onClick={() => { clearAllTools(); dispatch({ type: 'RESET' }); }}>♠ WebMCP Blackjack</span>
         <div className="controls">
           {/* Desktop: inline flag buttons */}
           <span className="agent-lang-group desktop-only">
@@ -318,10 +355,10 @@ export default function App() {
   WebMCP Blackjack
   ♣ ♦ ♥ ♠`}</pre>
           <p className="welcome-desc">
-            Same tools, different permissions — watch two AI agents
-            play blackjack under WebMCP's role-based tool access.
-            Observe real-time tool calls, information asymmetry,
-            and multilingual reasoning in action.
+            Two AI agents and you play blackjack on the W3C
+            WebMCP standard API. Each role gets different tools
+            with different data. Watch them reason in the
+            language you pick.
           </p>
           <button className="btn primary" onClick={startRound}>
             [ ENTER to start ]
